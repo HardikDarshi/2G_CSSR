@@ -1,7 +1,9 @@
-from flask import Flask, request,make_response, render_template
+from flask import Flask, request, make_response, render_template, send_file
+import tensorflow as tf
 import pandas as pd
 import pickle
 import Preprocessing
+import numpy as np
 
 app = Flask(__name__)
 
@@ -33,11 +35,15 @@ def index():
             df4 = df3.drop(columns=[col for col in df3 if col not in main_column2])
             a1 = Preprocessing.Preprocessor()
             model = 'rfc_cv_v7.sav'
+            #model = 'saved_model.pb'
+            #model1 = tf.keras.models.load_model('../saved_model.pb')
             loaded_model = pickle.load(open(model, 'rb'))
             print('rfc_cv model loaded for 2G CSSR')
             prediction = loaded_model.predict(df4)
             print('Prediction is ready')
+            #result = pd.DataFrame(np.argmax(i) for i in prediction)
             result = pd.DataFrame(prediction)
+            print('Dataframe prepared')
             result.columns = ['Model_Remarks']
             result = a1.int_to_categorical(result)
             print('int to categorical conversion done')
@@ -54,6 +60,11 @@ def index():
             return 'Something is Wrong'
     else:
         return render_template('index.html')
+
+@app.route('/CSSR')
+def download_ref():
+    p= 'Reference_file.xlsx'
+    return send_file(p, as_attachment=True)
 
 if __name__ == '__main__':
     #app.run(debug = True)
