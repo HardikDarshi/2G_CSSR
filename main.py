@@ -3,7 +3,7 @@ import tensorflow as tf
 import pandas as pd
 import pickle
 import Preprocessing
-import numpy as np
+
 
 app = Flask(__name__)
 
